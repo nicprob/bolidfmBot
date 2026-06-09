@@ -1,98 +1,73 @@
-import asyncio
-from aiogram import Bot, Dispatcher, F
-from aiogram.filters import CommandStart
-from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
+import os
+from aiogram import Bot, Dispatcher, executor, types
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
-from config import TOKEN, STREAM_URL, AD_URL, TG_SHOW_URL, VK_SHOW_URL, SITE_URL
+TOKEN = os.getenv("BOT_TOKEN")
+if not TOKEN:
+    raise RuntimeError("BOT_TOKEN environment variable is required")
+
+STREAM_URL = "https://icecast-bulteam.cdnvideo.ru/bolid128"
+AD_URL = "https://advradio.ru"
+TG_SHOW_URL = "https://t.me/vpsv88"
+VK_SHOW_URL = "https://vk.ru/vpsv88"
+SITE_URL = "https://bolidfm.ru"
 
 bot = Bot(token=TOKEN)
-dp = Dispatcher()
+dp = Dispatcher(bot)
 
-main_menu = ReplyKeyboardMarkup(
-    keyboard=[
-        [KeyboardButton(text="🎧 Слушать эфир")],
-        [KeyboardButton(text="🌞 Утреннее шоу"), KeyboardButton(text="📻 Программы")],
-        [KeyboardButton(text="🎁 Розыгрыши"), KeyboardButton(text="💰 Реклама")],
-        [KeyboardButton(text="📍 Контакты")]
-    ],
-    resize_keyboard=True
-)
+main_menu = ReplyKeyboardMarkup(resize_keyboard=True)
+main_menu.add(KeyboardButton("🎧 Слушать эфир"))
+main_menu.row(KeyboardButton("🌞 Утреннее шоу"), KeyboardButton("📻 Программы"))
+main_menu.row(KeyboardButton("🎁 Розыгрыши"), KeyboardButton("💰 Реклама"))
+main_menu.add(KeyboardButton("📍 Контакты"))
 
-@dp.message(CommandStart())
-async def start(message: Message):
-    await message.answer(
-        "🚗💨 Радио Болид\n\n"
-        "Выбирай раздел:",
-        reply_markup=main_menu
-    )
+@dp.message_handler(commands=["start"])
+async def start(message: types.Message):
+    await message.answer("🚗💨 Радио Болид\n\nВыбирай раздел:", reply_markup=main_menu)
 
-@dp.message(F.text == "🎧 Слушать эфир")
-async def listen(message: Message):
-    await message.answer_audio(
-        audio=STREAM_URL,
-        title="Радио Болид",
-        performer="Bolid FM"
-    )
+@dp.message_handler(lambda m: m.text == "🎧 Слушать эфир")
+async def listen(message: types.Message):
+    await message.answer(f"🎧 Слушать эфир:\n{STREAM_URL}")
 
-@dp.message(F.text == "🌞 Утреннее шоу")
-async def morning_show(message: Message):
+@dp.message_handler(lambda m: m.text == "🌞 Утреннее шоу")
+async def morning_show(message: types.Message):
     await message.answer(
         "🌞 Утреннее шоу «В постели с врагами»\n\n"
-        "Максим Чапаев и Николай Иванович будят город, "
-        "проверяют реальность на прочность и делают утро менее бесполезным.\n\n"
+        "Максим Чапаев и Николай Иванович будят город.\n\n"
         f"📱 Telegram: {TG_SHOW_URL}\n"
         f"📢 VK: {VK_SHOW_URL}"
     )
 
-@dp.message(F.text == "📻 Программы")
-async def programs(message: Message):
+@dp.message_handler(lambda m: m.text == "📻 Программы")
+async def programs(message: types.Message):
     await message.answer(
         "📻 Программы Радио Болид:\n\n"
         "🌞 Утреннее шоу\n"
-        "Главное утреннее шоу Радио Болид. Новости, юмор, розыгрыши, рубрики и бодрое безумие.\n\n"
         "🎵 Music Bolid FM\n"
-        "Музыкальный поток Радио Болид: хиты, драйв и настроение.\n\n"
         "🌙 Night Music BolidFM\n"
-        "Ночная музыка для тех, кто не спит, работает или просто подозрительно бодр.\n\n"
-        "🔥 Grand Hit BolidFM\n"
-        "Большие хиты, знакомые треки и музыка, которую хочется слушать громче."
+        "🔥 Grand Hit BolidFM"
     )
 
-@dp.message(F.text == "🎁 Розыгрыши")
-async def gifts(message: Message):
-    await message.answer(
-        "🎁 Розыгрыши Радио Болид\n\n"
-        "Здесь будут конкурсы, подарки и всякие приятные штуки.\n"
-        "Пока раздел готовится. Да, даже ботам иногда нужно собраться с мыслями."
-    )
+@dp.message_handler(lambda m: m.text == "🎁 Розыгрыши")
+async def gifts(message: types.Message):
+    await message.answer("🎁 Розыгрыши скоро появятся.")
 
-@dp.message(F.text == "💰 Реклама")
-async def ads(message: Message):
-    await message.answer(
-        "💰 Реклама на радио\n\n"
-        "Хотите рекламу на Радио Болид?\n"
-        f"Переходите на сайт: {AD_URL}"
-    )
+@dp.message_handler(lambda m: m.text == "💰 Реклама")
+async def ads(message: types.Message):
+    await message.answer(f"💰 Реклама на радио:\n{AD_URL}")
 
-@dp.message(F.text == "📍 Контакты")
-async def contacts(message: Message):
+@dp.message_handler(lambda m: m.text == "📍 Контакты")
+async def contacts(message: types.Message):
     await message.answer(
-        "📍 Радио Болид\n\n"
+        f"📍 Радио Болид\n\n"
         f"🌐 Сайт: {SITE_URL}\n"
         "☎ Телефон: +7 (342) 233-41-49\n"
         "✉ Email: office@bolidfm.ru"
     )
 
-@dp.message()
-async def fallback(message: Message):
-    await message.answer(
-        "Я пока понимаю только кнопки меню. "
-        "Печатать можно, конечно, но бот не обязан изображать телепата.",
-        reply_markup=main_menu
-    )
-
-async def main():
-    await dp.start_polling(bot)
+@dp.message_handler()
+async def fallback(message: types.Message):
+    await message.answer("Я понимаю только кнопки меню.", reply_markup=main_menu)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    executor.start_polling(dp, skip_updates=True)
