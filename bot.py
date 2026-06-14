@@ -29,6 +29,16 @@ bot = create_ipv4_bot(TOKEN)
 dp = Dispatcher(bot)
 
 
+async def set_default_commands(dp):
+    await dp.bot.set_my_commands([
+        types.BotCommand("start", "Главное меню"),
+        types.BotCommand("air", "Слушать эфир"),
+        types.BotCommand("site", "Сайт Радио Болид"),
+        types.BotCommand("show", "Утреннее шоу"),
+        types.BotCommand("app", "Скачать приложение"),
+    ])
+
+
 def get_main_menu():
     menu = InlineKeyboardMarkup(row_width=1)
     menu.add(
@@ -63,6 +73,29 @@ async def start(message: types.Message):
     await send_main_menu(message)
 
 
+@dp.message_handler(commands=["air"])
+async def air(message: types.Message):
+    await message.answer("Слушать эфир: https://bolidfm.ru/player")
+
+
+@dp.message_handler(commands=["site"])
+async def site(message: types.Message):
+    await message.answer("Сайт Радио Болид: https://bolidfm.ru")
+
+
+@dp.message_handler(commands=["show"])
+async def show(message: types.Message):
+    await message.answer("Утреннее шоу: https://t.me/vpsv88")
+
+
+@dp.message_handler(commands=["app"])
+async def app(message: types.Message):
+    await message.answer(
+        "Скачать приложение iPhone: https://apps.apple.com/ru/app/радио-болид/id1483483936\n"
+        "Скачать приложение Android: https://play.google.com/store/apps/details?id=com.vr.radiobolid"
+    )
+
+
 @dp.message_handler()
 async def menu(message: types.Message):
     print("FALLBACK HANDLER:", message.text, message.from_user.id)
@@ -79,5 +112,9 @@ async def menu(message: types.Message):
 
 if __name__ == "__main__":
     print("BOT STARTING")
-    executor.start_polling(dp, skip_updates=False)
+    executor.start_polling(
+        dp,
+        skip_updates=False,
+        on_startup=set_default_commands,
+    )
     print("BOT STOPPED")
