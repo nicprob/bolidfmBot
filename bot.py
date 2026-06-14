@@ -50,6 +50,7 @@ def get_main_menu():
 
 
 async def send_main_menu(message: types.Message):
+    print("MENU HANDLER:", message.text, message.from_user.id)
     await message.answer(
         "Привет! Это бот Радио Болид.\nВыберите нужный раздел:",
         reply_markup=get_main_menu(),
@@ -58,11 +59,13 @@ async def send_main_menu(message: types.Message):
 
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
+    print("START HANDLER:", message.text, message.from_user.id)
     await send_main_menu(message)
 
 
 @dp.message_handler()
 async def menu(message: types.Message):
+    print("FALLBACK HANDLER:", message.text, message.from_user.id)
     text = (message.text or "").lower().strip()
     if text in ("меню", "start", "старт", "начать", "/start", "привет"):
         await send_main_menu(message)
@@ -75,4 +78,6 @@ async def menu(message: types.Message):
 
 
 if __name__ == "__main__":
+    print("BOT STARTING")
     executor.start_polling(dp, skip_updates=False)
+    print("BOT STOPPED")
