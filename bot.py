@@ -40,13 +40,13 @@ async def start(message: types.Message):
     await send_main_menu(message)
 
 
-@dp.message_handler(lambda message: message.text and message.text.lower() in ("меню", "start", "старт", "начать"))
-async def menu(message: types.Message):
-    await send_main_menu(message)
-
-
 @dp.message_handler()
-async def fallback(message: types.Message):
+async def menu(message: types.Message):
+    text = (message.text or "").lower().strip()
+    if text in ("меню", "start", "старт", "начать", "/start", "привет"):
+        await send_main_menu(message)
+        return
+
     await message.answer(
         "Я бот Радио Болид. Нажмите кнопку ниже:",
         reply_markup=get_main_menu(),
@@ -54,4 +54,4 @@ async def fallback(message: types.Message):
 
 
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    executor.start_polling(dp, skip_updates=False)
