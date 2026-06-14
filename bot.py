@@ -40,23 +40,25 @@ async def set_default_commands(dp):
 
 
 def get_main_menu():
-    menu = InlineKeyboardMarkup(row_width=1)
-    menu.add(
-        InlineKeyboardButton("Слушать эфир", url="https://bolidfm.ru/player"),
-        InlineKeyboardButton("Сайт Радио Болид", url="https://bolidfm.ru"),
-        InlineKeyboardButton("Реклама на Радио Болид", url="https://advradio.ru"),
-        InlineKeyboardButton("Утреннее шоу", url="https://t.me/vpsv88"),
-        InlineKeyboardButton("VK", url="https://vk.ru/radiobolid"),
+    keyboard = InlineKeyboardMarkup(row_width=1)
+    keyboard.add(InlineKeyboardButton("▶️ Слушать эфир", url="https://bolidfm.ru/player"))
+    keyboard.add(InlineKeyboardButton("🌐 Сайт Радио Болид", url="https://bolidfm.ru"))
+    keyboard.add(InlineKeyboardButton("📢 Реклама на Радио Болид", url="https://advradio.ru"))
+    keyboard.add(InlineKeyboardButton("☀️ Утреннее шоу", url="https://t.me/vpsv88"))
+    keyboard.add(InlineKeyboardButton("VK", url="https://vk.ru/radiobolid"))
+    keyboard.add(
         InlineKeyboardButton(
-            "Скачать приложение iPhone",
+            "📱 Скачать приложение iPhone",
             url="https://apps.apple.com/ru/app/радио-болид/id1483483936",
-        ),
-        InlineKeyboardButton(
-            "Скачать приложение Android",
-            url="https://play.google.com/store/apps/details?id=com.vr.radiobolid",
-        ),
+        )
     )
-    return menu
+    keyboard.add(
+        InlineKeyboardButton(
+            "🤖 Скачать приложение Android",
+            url="https://play.google.com/store/apps/details?id=com.vr.radiobolid",
+        )
+    )
+    return keyboard
 
 
 async def send_main_menu(message: types.Message):
