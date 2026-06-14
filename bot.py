@@ -1,10 +1,31 @@
+import inspect
+import socket
+
+import aiohttp
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from config import TOKEN
 
 
-bot = Bot(token=TOKEN)
+def create_ipv4_bot(token):
+    bot_params = inspect.signature(Bot).parameters
+    connector = aiohttp.TCPConnector(family=socket.AF_INET)
+
+    if "connector" in bot_params:
+        return Bot(token=token, connector=connector)
+
+    if "session" in bot_params:
+        session = aiohttp.ClientSession(connector=connector)
+        return Bot(token=token, session=session)
+
+    connector.close()
+    bot = Bot(token=token)
+    bot._connector_init["family"] = socket.AF_INET
+    return bot
+
+
+bot = create_ipv4_bot(TOKEN)
 dp = Dispatcher(bot)
 
 
