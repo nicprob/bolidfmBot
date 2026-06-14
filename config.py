@@ -1,9 +1,1 @@
-import os
-
-
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-
-if not TOKEN:
-    raise RuntimeError(
-        "Не задан токен Telegram-бота. Установите переменную окружения TELEGRAM_BOT_TOKEN."
-    )
+TOKEN = "8837860905:AAEOQgJmlvaxnxfVY10yGZ2jS1vxv3PfOfQ"
